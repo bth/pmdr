@@ -30,6 +30,10 @@
         favicon.href = canvas.toDataURL('image/png');
       }
 
+      function setTitle(text) {
+        document.title = text;
+      }
+
       function notifyMe() {
         // Let's check if the browser supports notifications
         if (!("Notification" in window)) {
@@ -58,6 +62,8 @@
 
       setIconColor("ff0000");
       setIconColor("00ff00");
+
+      setTitle("00:00");
     </script>
     <button onclick="notifyMe()">Notify me!</button>
   </body>
