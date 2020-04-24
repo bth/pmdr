@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PMDR</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script>
+      function setIconColor(color) {
+        let favicon = document.getElementById('favicon');
+        if (!favicon) {
+          favicon = document.createElement('link');
+        }
+        favicon.id = "favicon"
+        favicon.rel = "icon"
+        document.head.appendChild(favicon);
+        const faviconSize = 16;
+
+        let canvas = document.createElement('canvas');
+        canvas.height = faviconSize;
+        canvas.width = faviconSize;
+
+        let context = canvas.getContext('2d');        
+        context.fillStyle = "#" + (color ? color : "ffffff");
+        context.fillRect(0, 0, faviconSize, faviconSize);
+
+        favicon.href = canvas.toDataURL('image/png');
+      }
+
+      function notifyMe() {
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+        }
+
+        // Let's check whether notification permissions have already been granted
+        else if (Notification.permission === "granted") {
+          // If it's okay let's create a notification
+          var notification = new Notification("Hi there!");
+        }
+
+        // Otherwise, we need to ask the user for permission
+        else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(function (permission) {
+            // If the user accepts, let's create a notification
+            if (permission === "granted") {
+              var notification = new Notification("Hi there!");
+            }
+          });
+        }
+
+        // At last, if the user has denied notifications, and you 
+        // want to be respectful there is no need to bother them any more.
+      }
+
+      setIconColor("ff0000");
+      setIconColor("00ff00");
+    </script>
+    <button onclick="notifyMe()">Notify me!</button>
+  </body>
+</html>
