@@ -55,16 +55,26 @@
             }
           });
         }
-
-        // At last, if the user has denied notifications, and you 
-        // want to be respectful there is no need to bother them any more.
       }
 
-      setIconColor("ff0000");
-      setIconColor("00ff00");
+      onInterval = () => {
+        const now = new Date().getTime();
+        setTitle(now);
+      }
 
-      setTitle("00:00");
+      function startTimer() {
+        setInterval(onInterval, 500);
+      }
+
+      function main() {
+        setIconColor("ff0000");
+        setIconColor("00ff00");
+        setTitle("00:00");
+      }
+
+      main();
+
     </script>
-    <button onclick="notifyMe()">Notify me!</button>
+    <button onclick="startTimer()">Notify me!</button>
   </body>
 </html>
