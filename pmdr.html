@@ -58,18 +58,26 @@
       }
 
       onInterval = () => {
+        console.log(deadline);
         const now = new Date().getTime();
         setTitle(now);
+        if (now >= deadline) {
+          notifyMe();
+          clearInterval(timer);
+        }
       }
 
       function startTimer() {
-        setInterval(onInterval, 500);
+        const now = new Date().getTime();
+        deadline = 60 * 1000 + now;
+        timer = setInterval(onInterval, 500);
       }
 
       function main() {
         setIconColor("ff0000");
         setIconColor("00ff00");
         setTitle("00:00");
+        notifyMe();
       }
 
       main();
