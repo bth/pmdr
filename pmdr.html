@@ -34,26 +34,16 @@
         document.title = text;
       }
 
-      function notifyMe() {
-        // Let's check if the browser supports notifications
+      function sendNotification() {
+        var notification = new Notification("Hi there!");
+      }
+
+      function checkPermissionNotification() {
         if (!("Notification" in window)) {
           alert("This browser does not support desktop notification");
         }
-
-        // Let's check whether notification permissions have already been granted
-        else if (Notification.permission === "granted") {
-          // If it's okay let's create a notification
-          var notification = new Notification("Hi there!");
-        }
-
-        // Otherwise, we need to ask the user for permission
-        else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then(function (permission) {
-            // If the user accepts, let's create a notification
-            if (permission === "granted") {
-              var notification = new Notification("Hi there!");
-            }
-          });
+        else if (Notification.permission !== "granted") {
+          Notification.requestPermission();
         }
       }
 
@@ -62,7 +52,7 @@
         const now = new Date().getTime();
         setTitle(now);
         if (now >= deadline) {
-          notifyMe();
+          sendNotification();
           clearInterval(timer);
         }
       }
@@ -77,7 +67,7 @@
         setIconColor("ff0000");
         setIconColor("00ff00");
         setTitle("00:00");
-        notifyMe();
+        checkPermissionNotification();
       }
 
       main();
