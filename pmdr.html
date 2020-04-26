@@ -32,7 +32,7 @@
           }
         }
 
-        start() {
+        run() {
           this.isRunning = true;
         }
 
@@ -106,7 +106,7 @@
         checkPermissionNotification();
 
         timer = new Timer(10, onDeadline);
-        timer.start();
+        timer.run();
         console.log(timer.getRemainedTime());
       }
 
