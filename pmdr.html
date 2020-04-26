@@ -16,27 +16,13 @@
           this.elapsedTime = 0;
           this.handleOnEnd = handleOnEnd;
           this.isRunning = false;
-          this.setNow();
-          this.setDeadline();
           this.tickFrequency = 500;
           this.tick = setInterval(this.onRefresh, this.tickFrequency);
         }
 
-        setNow() {
-          this.now = this.getNow();
-        }
-
-        setDeadline() {
-          this.deadline = this.totalTime + this.now;
-        }
-
         onRefresh = () => {
           if (this.isRunning) {
-            this.setNow();
             this.elapsedTime += this.tickFrequency; 
-
-            console.log(this.getRemainedTime());
-
             if (this.elapsedTime >= this.totalTime) {
               clearInterval(this.tick);
               if (this.handleOnEnd) {
@@ -46,13 +32,8 @@
           }
         }
 
-        getNow() {
-          return new Date().getTime();
-        }
-
         start() {
           this.isRunning = true;
-          this.setDeadline();
         }
 
         pause() {
