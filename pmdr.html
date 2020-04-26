@@ -106,17 +106,29 @@
         checkPermissionNotification();
 
         timer = new Timer(10, onDeadline);
-        timer.run();
-        console.log(timer.getRemainedTime());
       }
 
       function onDeadline() {
         console.log("onDeadline");
       }
 
-      main();
+      onStart = () => {
+        timer.run();
+      }
+
+      window.onkeyup = function(event) {
+        const key = event.code;
+        if (key == "Space") {
+          timer.run();
+        }
+      }
+
+      // MAIN
+      window.onload = function() {
+        main();
+      }
 
     </script>
-    <button onclick="">Start</button>
+    <button onclick="onStart()">Start</button>
   </body>
 </html>
