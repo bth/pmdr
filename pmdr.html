@@ -9,6 +9,61 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <script>
+
+      class Timer {
+        constructor(totalTime, handleOnEnd) {
+          this.totalTime = totalTime * 1000;
+          this.elapsedTime = 0;
+          this.handleOnEnd = handleOnEnd;
+          this.isRunning = false;
+          this.setNow();
+          this.setDeadline();
+          this.tickFrequency = 500;
+          this.tick = setInterval(this.onRefresh, this.tickFrequency);
+        }
+
+        setNow() {
+          this.now = this.getNow();
+        }
+
+        setDeadline() {
+          this.deadline = this.totalTime + this.now;
+        }
+
+        onRefresh = () => {
+          if (this.isRunning) {
+            this.setNow();
+            this.elapsedTime += this.tickFrequency; 
+
+            console.log(this.getRemainedTime());
+
+            if (this.elapsedTime >= this.totalTime) {
+              clearInterval(this.tick);
+              if (this.handleOnEnd) {
+                this.handleOnEnd();
+              }
+            }
+          }
+        }
+
+        getNow() {
+          return new Date().getTime();
+        }
+
+        start() {
+          this.isRunning = true;
+          this.setDeadline();
+        }
+
+        pause() {
+          this.isRunning = false;
+        }
+
+        getRemainedTime() {
+          return (this.totalTime - this.elapsedTime);
+        }
+      }
+
       function setIconColor(color) {
         let favicon = document.getElementById('favicon');
         if (!favicon) {
@@ -68,11 +123,19 @@
         setIconColor("00ff00");
         setTitle("00:00");
         checkPermissionNotification();
+
+        timer = new Timer(10, onDeadline);
+        timer.start();
+        console.log(timer.getRemainedTime());
+      }
+
+      function onDeadline() {
+        console.log("onDeadline");
       }
 
       main();
 
     </script>
-    <button onclick="startTimer()">Notify me!</button>
+    <button onclick="">Start</button>
   </body>
 </html>
