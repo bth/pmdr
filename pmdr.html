@@ -11,10 +11,10 @@
     <script>
 
       class Timer {
-        constructor(totalTime, handleOnEnd) {
-          this.totalTime = totalTime * 1000;
+        constructor() {
+          this.totalTime =  0;
           this.elapsedTime = 0;
-          this.handleOnEnd = handleOnEnd;
+          this.handleOnEnd = null;
           this.isRunning = false;
           this.tickFrequency = 500;
           this.tick = setInterval(this.onRefresh, this.tickFrequency);
@@ -24,12 +24,20 @@
           if (this.isRunning) {
             this.elapsedTime += this.tickFrequency; 
             if (this.elapsedTime >= this.totalTime) {
-              clearInterval(this.tick);
+              this.elapsedTime = this.totalTime;
+              this.pause();
               if (this.handleOnEnd) {
                 this.handleOnEnd();
               }
             }
           }
+        }
+
+        set(totalTime, handleOnEnd) {
+          this.totalTime = totalTime * 1000;
+          this.elapsedTime = 0;
+          this.handleOnEnd = handleOnEnd;
+          this.isRunning = false;
         }
 
         run() {
@@ -45,6 +53,7 @@
         }
       }
 
+      // UI
       function setIconColor(color) {
         let favicon = document.getElementById('favicon');
         if (!favicon) {
@@ -70,10 +79,6 @@
         document.title = text;
       }
 
-      function sendNotification() {
-        var notification = new Notification("Hi there!");
-      }
-
       function checkPermissionNotification() {
         if (!("Notification" in window)) {
           alert("This browser does not support desktop notification");
@@ -81,15 +86,6 @@
         else if (Notification.permission !== "granted") {
           Notification.requestPermission();
         }
-      }
-
-      function onDeadline() {
-        var notification = new Notification("End of timer!");
-      }
-
-      onRefresh = () => {
-        updateTitle();
-        updateIcon();
       }
 
       function updateTitle() {
@@ -120,10 +116,37 @@
         return date;
       }
 
+      function launchTimer(duration) {
+        timer.set(duration * 60, onDeadline);
+        timer.run();
+      }
+
+      function updateStage() {
+        if (stage === Stage.task) {
+          stage = Stage.break;
+          launchTimer(Duration.break);
+        }
+        else {
+          stage = Stage.task;
+          launchTimer(Duration.task);
+        }
+      }
+
+      onDeadline = () => {
+        var notification = new Notification("End of timer!");
+        updateStage();
+      }
+
+      onRefresh = () => {
+        updateTitle();
+        updateIcon();
+      }
+
       // CONST
       const Stage = Object.freeze({"task":1, "break":2})
       const State = Object.freeze({"run":1, "pause":2})
       const Color = Object.freeze({"pause":"ffffff", "task":"ff0000", "break":"00ff00"})
+      const Duration = Object.freeze({"task":1, "break":2})
 
       // MAIN
       function main() {
@@ -131,11 +154,12 @@
 
         setIconColor(Color.pause);
 
-        state = State.pause;
-        stage = Stage.task;
-        tick = setInterval(onRefresh, 1000);
+        timer = new Timer();
+        timer.set(Duration.task * 60, onDeadline);
 
-        timer = new Timer(10, onDeadline);
+        stage = Stage.task;
+        state = State.pause;
+        tick = setInterval(onRefresh, 500);
       }
 
       // EVENT MAPPING
