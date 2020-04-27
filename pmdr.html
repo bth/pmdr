@@ -83,39 +83,48 @@
         }
       }
 
-      onInterval = () => {
-        console.log(deadline);
-        const now = new Date().getTime();
-        setTitle(now);
-        if (now >= deadline) {
-          sendNotification();
-          clearInterval(timer);
-        }
-      }
-
-      function startTimer() {
-        const now = new Date().getTime();
-        deadline = 60 * 1000 + now;
-        timer = setInterval(onInterval, 500);
-      }
-
-      function main() {
-        setIconColor("ff0000");
-        setIconColor("00ff00");
-        setTitle("00:00");
-        checkPermissionNotification();
-
-        timer = new Timer(10, onDeadline);
-      }
-
       function onDeadline() {
         console.log("onDeadline");
       }
 
-      onStart = () => {
-        timer.run();
+      onRefresh = () => {
+        updateTitle();
+        updateIcon();
       }
 
+      function updateTitle() {
+        setTitle(msInPrintable(timer.getRemainedTime()));
+      }
+
+      function updateIcon() {
+        if(state === State.task) {
+          setIconColor("ff0000");  
+        }
+      }
+
+      function msInPrintable(timeInMS) {
+        const date = new Date(timeInMS).toISOString().slice(14,19); 
+        return date;
+      }
+
+      // ENUM
+      const State = Object.freeze({"task":1, "break":2})
+
+      // MAIN
+      function main() {
+        setIconColor("ffffff");
+        //setIconColor("00ff00");
+        setTitle("00:00");
+        checkPermissionNotification();
+
+        state = State.task;
+
+        tick = setInterval(onRefresh, 1000);
+
+        timer = new Timer(10, onDeadline);
+      }
+
+      // EVENT MAPPING
       window.onkeyup = function(event) {
         const key = event.code;
         if (key == "Space") {
@@ -123,12 +132,10 @@
         }
       }
 
-      // MAIN
       window.onload = function() {
         main();
       }
 
     </script>
-    <button onclick="onStart()">Start</button>
   </body>
 </html>
