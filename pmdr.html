@@ -84,7 +84,7 @@
       }
 
       function onDeadline() {
-        console.log("onDeadline");
+        var notification = new Notification("End of timer!");
       }
 
       onRefresh = () => {
@@ -93,12 +93,25 @@
       }
 
       function updateTitle() {
-        setTitle(msInPrintable(timer.getRemainedTime()));
+        const time = msInPrintable(timer.getRemainedTime());
+        let title = time;
+        if (state !== State.run) {
+          title += " [P]";
+        }
+        setTitle(title);
       }
 
       function updateIcon() {
-        if(state === State.task) {
-          setIconColor("ff0000");  
+        switch (stage) {
+          case Stage.task:
+            setIconColor(Color.task);
+            break;
+          case Stage.break:
+            setIconColor(Color.break);
+            break;
+          default:
+            setIconColor(Color.pause);
+            break;
         }
       }
 
@@ -107,18 +120,19 @@
         return date;
       }
 
-      // ENUM
-      const State = Object.freeze({"task":1, "break":2})
+      // CONST
+      const Stage = Object.freeze({"task":1, "break":2})
+      const State = Object.freeze({"run":1, "pause":2})
+      const Color = Object.freeze({"pause":"ffffff", "task":"ff0000", "break":"00ff00"})
 
       // MAIN
       function main() {
-        setIconColor("ffffff");
-        //setIconColor("00ff00");
-        setTitle("00:00");
         checkPermissionNotification();
 
-        state = State.task;
+        setIconColor(Color.pause);
 
+        state = State.pause;
+        stage = Stage.task;
         tick = setInterval(onRefresh, 1000);
 
         timer = new Timer(10, onDeadline);
@@ -128,7 +142,14 @@
       window.onkeyup = function(event) {
         const key = event.code;
         if (key == "Space") {
-          timer.run();
+          if (state === State.pause) {
+            timer.run();
+            state = State.run;
+          }
+          else {
+            timer.pause();
+            state = State.pause;
+          }
         }
       }
 
