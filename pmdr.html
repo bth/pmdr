@@ -54,6 +54,15 @@
       }
 
       // UI
+      function getImage(canvas, size, color) {
+
+        let context = canvas.getContext('2d');        
+        context.fillStyle = "#" + color;
+        context.fillRect(0, 0, size, size);
+
+        return canvas.toDataURL('image/png');
+      }
+
       function createImages() {
         const faviconSize = 16;
 
@@ -61,16 +70,9 @@
         canvas.height = faviconSize;
         canvas.width = faviconSize;
 
-        let context = canvas.getContext('2d');        
-        context.fillStyle = "#" + Color.task;
-        context.fillRect(0, 0, faviconSize, faviconSize);
-
-        imageTask = canvas.toDataURL('image/png');
-
-        context.fillStyle = "#" + Color.break;
-        context.fillRect(0, 0, faviconSize, faviconSize);
-
-        imageBreak = canvas.toDataURL('image/png');
+        imageTask = getImage(canvas, faviconSize, Color.task);
+        imageBreak = getImage(canvas, faviconSize, Color.break);
+        imageEndOfCycle = getImage(canvas, faviconSize, Color.endOfCycle);
       }
 
       function setIconColor(stage) {
@@ -168,12 +170,13 @@
           icon = imageBreak;
         }
         else {
-          icon = imageTask;
           if (cycleNumber == maxCycles) {
             title = "End of " + maxCycles + " cycles";
+            icon = imageEndOfCycle;
           }
           else {
             title = "Task";
+            icon = imageTask;
           }
         }
 
@@ -189,7 +192,7 @@
       // CONST
       const Stage = Object.freeze({"task":1, "break":2})
       const State = Object.freeze({"run":1, "pause":2})
-      const Color = Object.freeze({"task":"ff0000", "break":"00ff00"})
+      const Color = Object.freeze({"task":"cc6666", "break":"66cc99", "endOfCycle":"66cccc"})
       const Duration = Object.freeze({"task":0.1, "break":0.2})
       const maxCycles = 4;
 
