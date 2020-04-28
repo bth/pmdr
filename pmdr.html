@@ -53,6 +53,19 @@
         }
       }
 
+      // Parameters
+      function getURLParameter(sParam) {
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++) {
+          var sParameterName = sURLVariables[i].split('=');
+          if (sParameterName[0] == sParam) 
+          {
+            return sParameterName[1];
+          }
+        }
+      }
+
       // UI
       function getImage(canvas, size, color) {
 
@@ -132,13 +145,13 @@
       function updateStage() {
         if (stage === Stage.task) {
           stage = Stage.break;
-          launchTimer(Duration.break);
+          launchTimer(breakDuration);
         }
         else {
           cycleNumber = cycleNumber + 1;
           if (cycleNumber <= maxCycles) {
             stage = Stage.task;
-            launchTimer(Duration.task);
+            launchTimer(taskDuration);
           }
           else {
             reset(Stage.task);
@@ -149,10 +162,10 @@
 
       function timeForStage(stage) {
         if (stage === Stage.task) {
-          return Duration.task;
+          return taskDuration;
         }
         else {
-          return Duration.break;
+          return breakDuration;
         }
       }
 
@@ -193,11 +206,25 @@
       const Stage = Object.freeze({"task":1, "break":2})
       const State = Object.freeze({"run":1, "pause":2})
       const Color = Object.freeze({"task":"cc6666", "break":"66cc99", "endOfCycle":"66cccc"})
-      const Duration = Object.freeze({"task":0.1, "break":0.2})
-      const maxCycles = 4;
+      var taskDuration = 25;
+      var breakDuration = 5;
+      var maxCycles = 4;
 
       // MAIN
       function main() {
+        inputMaxCycles = getURLParameter('maxCycles');
+        inputTaskDuration = getURLParameter('taskDuration');
+        inputBreakDuration = getURLParameter('breakDuration');
+        if (inputMaxCycles) {
+          maxCycles = inputMaxCycles;
+        }
+        if (inputTaskDuration) {
+          taskDuration = inputTaskDuration;
+        }
+        if (inputTaskDuration) {
+          breakDuration = inputBreakDuration;
+        }
+
         checkPermissionNotification();
         createImages();
 
