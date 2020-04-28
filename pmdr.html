@@ -54,14 +54,7 @@
       }
 
       // UI
-      function setIconColor(color) {
-        let favicon = document.getElementById('favicon');
-        if (!favicon) {
-          favicon = document.createElement('link');
-        }
-        favicon.id = "favicon"
-        favicon.rel = "icon"
-        document.head.appendChild(favicon);
+      function createImages() {
         const faviconSize = 16;
 
         let canvas = document.createElement('canvas');
@@ -69,10 +62,32 @@
         canvas.width = faviconSize;
 
         let context = canvas.getContext('2d');        
-        context.fillStyle = "#" + (color ? color : "ffffff");
+        context.fillStyle = "#" + Color.task;
         context.fillRect(0, 0, faviconSize, faviconSize);
 
-        favicon.href = canvas.toDataURL('image/png');
+        imageTask = canvas.toDataURL('image/png');
+
+        context.fillStyle = "#" + Color.break;
+        context.fillRect(0, 0, faviconSize, faviconSize);
+
+        imageBreak = canvas.toDataURL('image/png');
+      }
+
+      function setIconColor(stage) {
+        let favicon = document.getElementById('favicon');
+        if (!favicon) {
+          favicon = document.createElement('link');
+        }
+        favicon.id = "favicon"
+        favicon.rel = "icon"
+        document.head.appendChild(favicon);
+
+        if (stage === Stage.task) {
+          favicon.href = imageTask;
+        }
+        else {
+          favicon.href = imageBreak;
+        }
       }
 
       function setTitle(text) {
@@ -99,17 +114,7 @@
       }
 
       function updateIcon() {
-        switch (stage) {
-          case Stage.task:
-            setIconColor(Color.task);
-            break;
-          case Stage.break:
-            setIconColor(Color.break);
-            break;
-          default:
-            setIconColor(Color.pause);
-            break;
-        }
+        setIconColor(stage);
       }
 
       function msInPrintable(timeInMS) {
@@ -159,18 +164,20 @@
       onDeadline = () => {
         let title = "";
         if (stage == Stage.task) {
-          title = "Time for a task";
+          title = "Break";
+          icon = imageBreak;
         }
         else {
+          icon = imageTask;
           if (cycleNumber == maxCycles) {
             title = "End of " + maxCycles + " cycles";
           }
           else {
-            title = "Time for a break";
+            title = "Task";
           }
         }
 
-        new Notification(title, {icon: "https://jaa.fr/assurances/wp-content/uploads/2019/07/KILL-KITTY-Cat-tente-d39%C3%A9touffer-l39homme-pendant-qu39il-dort.jpg"});
+        new Notification(title, {icon: icon});
         updateStage();
       }
 
@@ -189,6 +196,7 @@
       // MAIN
       function main() {
         checkPermissionNotification();
+        createImages();
 
         timer = new Timer();
         cycleNumber = 1;
