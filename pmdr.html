@@ -91,6 +91,7 @@
       function updateTitle() {
         const time = msInPrintable(timer.getRemainedTime());
         let title = time;
+        title += " " + "(" + cycleNumber + "/" + maxCycles + ")"
         if (state !== State.run) {
           title += " [P]";
         }
@@ -127,9 +128,32 @@
           launchTimer(Duration.break);
         }
         else {
-          stage = Stage.task;
-          launchTimer(Duration.task);
+          cycleNumber++;
+          if (cycleNumber < maxCycles) {
+            stage = Stage.task;
+            launchTimer(Duration.task);
+          }
+          else {
+            reset(Stage.task);
+            cycleNumber = 1;
+          }
         }
+      }
+
+      function timeForStage(stage) {
+        if (stage === Stage.task) {
+          return Duration.task;
+        }
+        else {
+          return Duration.break;
+        }
+      }
+
+      function reset(stageToReset) {
+        timer.set(timeForStage(stageToReset) * 60, onDeadline);
+        stage = stageToReset;
+        state = State.pause;
+        onRefresh();
       }
 
       onDeadline = () => {
@@ -145,20 +169,19 @@
       // CONST
       const Stage = Object.freeze({"task":1, "break":2})
       const State = Object.freeze({"run":1, "pause":2})
-      const Color = Object.freeze({"pause":"ffffff", "task":"ff0000", "break":"00ff00"})
+      const Color = Object.freeze({"task":"ff0000", "break":"00ff00"})
       const Duration = Object.freeze({"task":1, "break":2})
+      const maxCycles = 4;
 
       // MAIN
       function main() {
         checkPermissionNotification();
 
-        setIconColor(Color.pause);
-
         timer = new Timer();
-        timer.set(Duration.task * 60, onDeadline);
+        cycleNumber = 1;
 
-        stage = Stage.task;
-        state = State.pause;
+        reset(Stage.task);
+
         tick = setInterval(onRefresh, 500);
       }
 
@@ -174,6 +197,24 @@
             timer.pause();
             state = State.pause;
           }
+        }
+        else if (key == "Digit1") {
+          cycleNumber = 1;
+        }
+        else if (key == "Digit2") {
+          cycleNumber = 2;
+        }
+        else if (key == "Digit3") {
+          cycleNumber = 3;
+        }
+        else if (key == "Digit4") {
+          cycleNumber = 4;
+        }
+        else if (key == "KeyR" || key == "KeyT") {
+          reset(Stage.task);
+        }
+        else if (key == "KeyP") {
+          reset(Stage.break);
         }
       }
 
