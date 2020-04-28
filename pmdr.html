@@ -128,8 +128,8 @@
           launchTimer(Duration.break);
         }
         else {
-          cycleNumber++;
-          if (cycleNumber < maxCycles) {
+          cycleNumber = cycleNumber + 1;
+          if (cycleNumber <= maxCycles) {
             stage = Stage.task;
             launchTimer(Duration.task);
           }
@@ -157,7 +157,20 @@
       }
 
       onDeadline = () => {
-        var notification = new Notification("End of timer!");
+        let title = "";
+        if (stage == Stage.task) {
+          title = "Time for a task";
+        }
+        else {
+          if (cycleNumber == maxCycles) {
+            title = "End of " + maxCycles + " cycles";
+          }
+          else {
+            title = "Time for a break";
+          }
+        }
+
+        new Notification(title, {icon: "https://jaa.fr/assurances/wp-content/uploads/2019/07/KILL-KITTY-Cat-tente-d39%C3%A9touffer-l39homme-pendant-qu39il-dort.jpg"});
         updateStage();
       }
 
@@ -170,7 +183,7 @@
       const Stage = Object.freeze({"task":1, "break":2})
       const State = Object.freeze({"run":1, "pause":2})
       const Color = Object.freeze({"task":"ff0000", "break":"00ff00"})
-      const Duration = Object.freeze({"task":1, "break":2})
+      const Duration = Object.freeze({"task":0.1, "break":0.2})
       const maxCycles = 4;
 
       // MAIN
@@ -213,7 +226,7 @@
         else if (key == "KeyR" || key == "KeyT") {
           reset(Stage.task);
         }
-        else if (key == "KeyP") {
+        else if (key == "KeyP" || key == "KeyB") {
           reset(Stage.break);
         }
       }
