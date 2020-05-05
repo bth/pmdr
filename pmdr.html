@@ -13,18 +13,18 @@
       class Timer {
         constructor() {
           this.totalTime =  0;
-          this.elapsedTime = 0;
           this.handleOnEnd = null;
           this.isRunning = false;
           this.tickFrequency = 500;
+          this.target = new Date().getTime();
+          this.cursor = new Date().getTime();
           this.tick = setInterval(this.onRefresh, this.tickFrequency);
         }
 
         onRefresh = () => {
           if (this.isRunning) {
-            this.elapsedTime += this.tickFrequency; 
-            if (this.elapsedTime >= this.totalTime) {
-              this.elapsedTime = this.totalTime;
+            const now = new Date().getTime();
+            if (now >= this.target) {
               this.pause();
               if (this.handleOnEnd) {
                 this.handleOnEnd();
@@ -35,21 +35,36 @@
 
         set(totalTime, handleOnEnd) {
           this.totalTime = totalTime * 1000;
-          this.elapsedTime = 0;
+          const now = new Date().getTime();
+          this.cursor = now;
+          this.target = this.cursor + this.totalTime;
           this.handleOnEnd = handleOnEnd;
           this.isRunning = false;
         }
 
         run() {
+          const now = new Date().getTime();
+          const elapsedTime = this.target - this.cursor;
+          this.cursor = now;
+          this.target = this.cursor + elapsedTime;
           this.isRunning = true;
         }
 
         pause() {
+          this.cursor = new Date().getTime();
           this.isRunning = false;
         }
 
         getRemainedTime() {
-          return (this.totalTime - this.elapsedTime);
+          let remainedTime = 0;
+          if (this.isRunning) {
+            const now = new Date().getTime();
+            remainedTime = this.target - now;
+          }
+          else {
+            remainedTime = this.target - this.cursor;
+          }
+          return remainedTime;
         }
       }
 
