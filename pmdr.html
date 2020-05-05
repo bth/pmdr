@@ -92,7 +92,7 @@
       }
 
       function createImages() {
-        const faviconSize = 16;
+        const faviconSize = 64;
 
         let canvas = document.createElement('canvas');
         canvas.height = faviconSize;
@@ -100,7 +100,7 @@
 
         imageTask = getImage(canvas, faviconSize, Color.task);
         imageBreak = getImage(canvas, faviconSize, Color.break);
-        imageEndOfCycle = getImage(canvas, faviconSize, Color.endOfCycle);
+        imageLongBreak = getImage(canvas, faviconSize, Color.endOfCycle);
       }
 
       function setIconColor(stage) {
@@ -115,8 +115,11 @@
         if (stage === Stage.task) {
           favicon.href = imageTask;
         }
-        else {
+        else if (stage === Stage.break) {
           favicon.href = imageBreak;
+        }
+        else {
+          favicon.href = imageLongBreak;
         }
       }
 
@@ -162,16 +165,21 @@
           stage = Stage.break;
           launchTimer(breakDuration);
         }
-        else {
-          cycleNumber = cycleNumber + 1;
-          if (cycleNumber <= maxCycles) {
+        else if (stage === Stage.break) {
+          if (cycleNumber < maxCycles) {
+            cycleNumber = cycleNumber + 1;
             stage = Stage.task;
             launchTimer(taskDuration);
           }
           else {
-            reset(Stage.task);
-            cycleNumber = 1;
+            stage = Stage.longBreak;
+            launchTimer(longBreakDuration);
           }
+        }
+        else {
+          stage = Stage.task;
+          cycleNumber = 1;
+          launchTimer(taskDuration);
         }
       }
 
@@ -193,19 +201,23 @@
 
       onDeadline = () => {
         let title = "";
-        if (stage == Stage.task) {
+        if (stage === Stage.task) {
           title = "Break";
           icon = imageBreak;
         }
-        else {
+        else if (stage === Stage.break) {
           if (cycleNumber == maxCycles) {
-            title = "End of " + maxCycles + " cycles";
-            icon = imageEndOfCycle;
+            title = "Long Break";
+            icon = imageLongBreak;
           }
           else {
             title = "Task";
             icon = imageTask;
           }
+        }
+        else {
+          title = "Task";
+          icon = imageTask;
         }
 
         new Notification(title, {icon: icon});
@@ -218,11 +230,12 @@
       }
 
       // CONST
-      const Stage = Object.freeze({"task":1, "break":2})
+      const Stage = Object.freeze({"task":1, "break":2, "longBreak":3})
       const State = Object.freeze({"run":1, "pause":2})
-      const Color = Object.freeze({"task":"cc6666", "break":"66cc99", "endOfCycle":"66cccc"})
+      const Color = Object.freeze({"task":"cc6666", "break":"66cc99", "endOfCycle":"eff9f9"})
       var taskDuration = 25;
       var breakDuration = 5;
+      var longBreakDuration = 15;
       var maxCycles = 4;
 
       // MAIN
@@ -230,6 +243,7 @@
         inputMaxCycles = getURLParameter('maxCycles');
         inputTaskDuration = getURLParameter('taskDuration');
         inputBreakDuration = getURLParameter('breakDuration');
+        inputLongBreakDuration = getURLParameter('longBreakDuration');
         if (inputMaxCycles) {
           maxCycles = inputMaxCycles;
         }
@@ -238,6 +252,9 @@
         }
         if (inputTaskDuration) {
           breakDuration = inputBreakDuration;
+        }
+        if (inputLongBreakDuration) {
+          longBreakDuration = inputLongBreakDuration;
         }
 
         checkPermissionNotification();
@@ -281,6 +298,10 @@
         }
         else if (key == "KeyP" || key == "KeyB") {
           reset(Stage.break);
+        }
+        else if (key == "KeyL") {
+          cycleNumber = maxCycles;
+          reset(Stage.longBreak);
         }
       }
 
