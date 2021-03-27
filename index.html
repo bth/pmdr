@@ -33,7 +33,7 @@
     @media (orientation: landscape) {
       #app {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: minmax(10px, 1fr) minmax(10px, 1fr);
+        grid-template-rows: minmax(10px, 1fr);
         grid-template-areas: 
           "pie parameters";
       }
@@ -42,6 +42,8 @@
       position: relative;
       width: 100%;
       height: 100%;
+      padding: 5px;
+      overflow: hidden;
     }
     #arrow {
       position: absolute;
@@ -124,23 +126,23 @@
       </div>
       <div id="block-parameters">
         <div id="container-parameters">
-          <label>Task duration (min)</label>
+          <label>Change state</label>
+          <button id="button_state" type="button"></button>
+
+          <label>Task duration (minutes)</label>
           <input id="task_duration" type="number" min="0"/>
           <label>Task color</label>
           <input id="task_color" type="color"/>
 
-          <label>Break duration (min)</label>
+          <label>Break duration (minutes)</label>
           <input id="break_duration" type="number" min="0"/>
           <label>Break color</label>
           <input id="break_color" type="color"/>
 
-          <label>Long Break duration (min)</label>
+          <label>Long Break duration (minutes)</label>
           <input id="longbreak_duration" type="number" min="0"/>
           <label>Long Break color</label>
           <input id="longbreak_color" type="color"/>
-
-          <label>Running</label>
-          <button id="button_state" type="button"></button>
         </div> 
       </div>
       <div id="block-minimal-hotkeys">
