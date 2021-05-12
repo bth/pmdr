@@ -3,13 +3,16 @@ self.addEventListener('install', function(event) {
     caches.open('v1').then(function(cache) {
       return cache.addAll([
         '/pmdr/',
-        '/pmdr/index.html'
+        '/pmdr/index.html',
+        '/pmdr/img/icon.svg',
+        '/pmdr/manifest.webmanifest'
       ]);
     })
   );
 });
 
 self.addEventListener('fetch', function(event) {
+  if (!(event.request.url.indexOf('http') === 0)) return;
   event.respondWith(caches.match(event.request).then(function(response) {
     // caches.match() always resolves
     // but in case of success response will have value
@@ -25,6 +28,8 @@ self.addEventListener('fetch', function(event) {
         caches.open('v1').then(function (cache) {
           cache.put(event.request, responseClone);
         });
+        return response;
+      }).catch(function () {
         return response;
       });
     }

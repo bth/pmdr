@@ -1,0 +1,11 @@
+{
+  "name": "PMDR",
+  "short_name": "PMDR",
+  "display": "standalone",
+  "start_url": ".",
+  "icons": [{
+    "src": "img/icon.svg",
+    "sizes": "144x144",
+    "type": "image/svg+xml"
+  }]
+}
