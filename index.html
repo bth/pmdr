@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link id="favicon" rel="icon" />
+    <link rel="manifest" href="manifest.webmanifest">
     <title>PMDR</title>
   </head>
   <style type="text/css">
@@ -824,6 +825,22 @@
 
       window.onload = function() {
         const pmdr = new Pmdr();
+      }
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/pmdr/sw.js', { scope: '/pmdr/' })
+        .then(function(reg) {
+            if(reg.installing) {
+              console.log('Service worker installing');
+            } else if(reg.waiting) {
+              console.log('Service worker installed');
+            } else if(reg.active) {
+              console.log('Service worker active');
+            }
+          }).catch(function(error) {
+            // registration failed
+            console.log('Registration failed with ' + error);
+          });
       }
 
     </script>
