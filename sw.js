@@ -30,7 +30,7 @@ self.addEventListener('fetch', function(event) {
         });
         return response;
       }).catch(function () {
-        return response;
+        return caches.match('/pmdr/index.html');;
       });
     }
   }));
