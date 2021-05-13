@@ -305,7 +305,6 @@
 
       class Pmdr {
         constructor() {
-          this.checkPermissionNotification();
           this.initConsts();
           this.initParams();
           this.initElementsFromDOM();
@@ -530,6 +529,9 @@
               transitions: {
                 SPACE: {
                   target: 'RUN',
+                  action: () => {
+                    this.checkPermissionNotification();
+                  }
                 },
                 TASK: {
                   action: () => {
