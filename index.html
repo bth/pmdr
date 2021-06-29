@@ -54,6 +54,18 @@
       left: 50%;
       top: 0px;
     }
+    #information {
+      position: absolute;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     #block-pie {
       grid-area: pie;
       width: 100%;
@@ -124,6 +136,13 @@
             <svg height="25" width="50">
               <polygon points="0,0 50,0 25,25" style="fill: #00000055" />
             </svg>
+          </div>
+          <div id="information">
+            <div>
+              <span>00:00</span><br/>
+              <span>(1/4)</span><br/>
+              <span>[PAUSE]</span><br/>
+            </div>
           </div>
         </div>
       </div>
