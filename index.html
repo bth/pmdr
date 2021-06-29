@@ -139,9 +139,9 @@
           </div>
           <div id="information">
             <div>
-              <span>00:00</span><br/>
-              <span>(1/4)</span><br/>
-              <span>[PAUSE]</span><br/>
+              <span id="info_timer"></span><br/>
+              <span id="info_cycle"></span><br/>
+              <span id="info_stage"></span><br/>
             </div>
           </div>
         </div>
@@ -402,6 +402,9 @@
             "canvas_pie": document.getElementById('pie-canvas'),
             "help_toggle": document.getElementById('block-minimal-hotkeys'),
             "help_panel": document.getElementById('block-hotkeys'),
+            "info_timer": document.getElementById('info_timer'),
+            "info_cycle": document.getElementById('info_cycle'),
+            "info_stage": document.getElementById('info_stage'),
           };
 
           for (const [name, input] of Object.entries(this.elementsFromDOM.inputs)) {
@@ -475,19 +478,24 @@
           }
         }
 
-        sendNotification() {
-          let title = "";
-          switch (this.currentStage) {
+        getStageInString(stage) {
+          let stageInString = "";
+          switch (stage) {
             case this.STAGE.task:
-              title = "Task";
+              stageInString = "Task";
               break;
             case this.STAGE.break:
-              title = "Break";
+              stageInString = "Break";
               break;
             case this.STAGE.longbreak:
-              title = "Longbreak";
+              stageInString = "Longbreak";
               break;
           }
+          return stageInString;
+        }
+
+        sendNotification() {
+          let title = this.getStageInString(this.currentStage);
           let icon = document.getElementById('favicon').href;
           new Notification(title, {icon: icon});
         }
@@ -709,6 +717,7 @@
           this.updateIcon();
           this.updateTitle();
           this.updatePie();
+          this.updateInfo();
         }
 
         msInPrintable(timeInMS) {
@@ -724,6 +733,15 @@
             title += " [PAUSE]";
           }
           this.setTitle(title);
+        }
+
+        updateInfo() {
+          const timer = this.msInPrintable(this.timer.getRemainedTime());
+          const cycle = "(" + this.currentCycleNumber + "/" + this.maxCycles + ")";
+          const stage = this.getStageInString(this.currentStage);
+          this.elementsFromDOM.info_timer.textContent = timer;
+          this.elementsFromDOM.info_cycle.textContent = cycle;
+          this.elementsFromDOM.info_stage.textContent = stage;
         }
 
         setTitle(text) {
