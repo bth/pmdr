@@ -80,6 +80,7 @@
     #pie-canvas {
       max-height: 100%;
       max-width: 100%;
+      opacity: 0.5;
     }
     #container-parameters {
       padding: 20px;
@@ -770,6 +771,7 @@
         updatePie() {
           const deg = this.getRotation();
           this.elementsFromDOM.canvas_pie.style.transform = "rotate(" + deg + "deg)";
+          this.elementsFromDOM.canvas_pie.style.opacity = (this.currentState !== "RUN") ? "0.5" : "1.0" ;
         }
 
         setState(state) {
