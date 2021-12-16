@@ -588,6 +588,16 @@
                     this.toggleHelp();
                   }
                 },
+                NEXT: {
+                  action: () => {
+                    this.goToNextPosition();
+                  }
+                },
+                PREVIOUS: {
+                  action: () => {
+                    this.goToPreviousPosition();
+                  }
+                },
               }
             },
             RUN: {
@@ -627,6 +637,18 @@
                 HELP: {
                   action: () => {
                     this.toggleHelp();
+                  }
+                },
+                NEXT: {
+                  target: 'PAUSE',
+                  action: () => {
+                    this.goToNextPosition();
+                  }
+                },
+                PREVIOUS: {
+                  target: 'PAUSE',
+                  action: () => {
+                    this.goToPreviousPosition();
                   }
                 },
               }
@@ -676,6 +698,11 @@
         initKeyboardInputs() {
           window.onkeyup = (event) => {
             const key = event.code;
+
+            if (event.altKey || event.shiftKey || event.metaKey || event.ctrlKey) {
+              return;
+            }
+
             if (key == "Space") {
               this.sendEvent("SPACE");
             }
@@ -703,8 +730,14 @@
             else if (key == "KeyH") {
               this.sendEvent("HELP");
             }
+            else if (key == "ArrowLeft") {
+              this.sendEvent("PREVIOUS");
+            }
+            else if (key == "ArrowRight") {
+              this.sendEvent("NEXT");
+            }
           }
-        }
+        } 
 
         initUpdateTick() {
           this.tick = setInterval(this.onRefresh, 500);
@@ -854,6 +887,64 @@
             this.setTimer(this.getTimeForStage(this.currentStage));
           }
           this.updateViews();
+        }
+
+        getNextPosition() {
+          let nextPosition = {};
+          if (this.currentStage == this.STAGE.task) {
+            nextPosition.stage = this.STAGE.break;
+            nextPosition.cycle = this.currentCycleNumber;
+          }
+          else if (this.currentStage == this.STAGE.break) {
+            if (this.currentCycleNumber < this.maxCycles) {
+              nextPosition.stage = this.STAGE.task;
+              nextPosition.cycle = this.currentCycleNumber + 1;
+            }
+            else {
+              nextPosition.stage = this.STAGE.longbreak;
+              nextPosition.cycle = this.maxCycles;        
+            }
+          }
+          else {
+            nextPosition.stage = this.STAGE.task;
+            nextPosition.cycle = 1;
+          }
+          return nextPosition;
+        }
+
+        getPreviousPosition() {
+          let nextPosition = {};
+          if (this.currentStage == this.STAGE.break) {
+            nextPosition.stage = this.STAGE.task;
+            nextPosition.cycle = this.currentCycleNumber;
+          }
+          else if (this.currentStage == this.STAGE.task) {
+            if (this.currentCycleNumber > 1) {
+              nextPosition.stage = this.STAGE.break;
+              nextPosition.cycle = this.currentCycleNumber - 1;
+            }
+            else {
+              nextPosition.stage = this.STAGE.longbreak;
+              nextPosition.cycle = this.maxCycles;        
+            }
+          }
+          else {
+            nextPosition.stage = this.STAGE.break;
+            nextPosition.cycle = this.maxCycles;
+          }
+          return nextPosition;
+        }
+
+        goToNextPosition() {
+          const position = this.getNextPosition();
+          this.currentCycleNumber = position.cycle;
+          this.reset(position.stage);
+        }
+
+        goToPreviousPosition() {
+          const position = this.getPreviousPosition();
+          this.currentCycleNumber = position.cycle;
+          this.reset(position.stage);
         }
 
         toggleHelp() {
