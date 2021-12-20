@@ -696,10 +696,23 @@
         }
 
         initKeyboardInputs() {
+
+          window.metaKeyPressed = false;
+
+          window.onkeydown = (event) => {
+            if (event.key == "OS") {
+              window.metaKeyPressed = true;
+            }
+          }
+
           window.onkeyup = (event) => {
             const key = event.code;
 
-            if (event.altKey || event.shiftKey || event.metaKey || event.ctrlKey) {
+            if (event.key == "OS") {
+              window.metaKeyPressed = false;
+            }
+
+            if (event.altKey || event.shiftKey || event.metaKey || event.ctrlKey || window.metaKeyPressed) {
               return;
             }
 
