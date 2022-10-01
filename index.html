@@ -334,7 +334,7 @@
           this.initTimer();
           this.initDynamic();
           this.drawPie();
-          this.initKeyboardInputs();
+          this.initInputs();
           this.initUpdateTick();
         }
 
@@ -695,9 +695,13 @@
           myPiechart.draw();
         }
 
-        initKeyboardInputs() {
+        initInputs() {
 
           window.metaKeyPressed = false;
+
+          window.onclick = (event) => {
+            window.metaKeyPressed = false;
+          }
 
           window.onkeydown = (event) => {
             if (event.key == "OS") {
