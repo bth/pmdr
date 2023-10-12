@@ -1,6 +1,7 @@
 {
   "name": "PMDR",
   "short_name": "PMDR",
+  "version": "2",
   "display": "standalone",
   "start_url": ".",
   "icons": [{
