@@ -780,6 +780,7 @@
 
         initUpdateTick() {
           this.tick = setInterval(this.onRefresh, this.tickInterval);
+          this.onRefresh();
         }
 
         onRefresh = () => {
@@ -910,6 +911,7 @@
              text = "RUN"
           }
           this.elementsFromDOM.button_state.textContent = text;
+          this.updateViews();
         }
 
         getTimeForStage(stage) {
@@ -1011,6 +1013,7 @@
 
         resetTotalTime() {
           this.totalTime = 0;
+          this.updateViews();
         }
       }
 
