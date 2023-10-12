@@ -158,8 +158,8 @@
         <div id="container-parameters">
           <label>Total elapsed time:</label>
           <div id="total_timer_container">
-            <label>00:00:00</label>
-            <button id="button_reset_total_timer" type="button">Reset</button>
+            <label id="info_total_time"></label>
+            <button id="button_reset_total_time" type="button">Reset</button>
           </div>
 
           <label>Change state</label>
@@ -341,6 +341,7 @@
       class Pmdr {
         constructor() {
           this.initConsts();
+          this.initAttributs();
           this.initParams();
           this.initElementsFromDOM();
           this.initElementsDOMWithParams();
@@ -362,6 +363,11 @@
 
         initConsts() {
           this.STAGE = Object.freeze({"task":1, "break":2, "longbreak":3});
+          this.tickInterval = 500;
+        }
+
+        initAttributs() {
+          this.totalTime = 0;
         }
 
         getURLParameter(sParam) {
@@ -413,12 +419,14 @@
               "longbreak_color": document.getElementById('longbreak_color'),
             },
             "button_state": document.getElementById('button_state'),
+            "button_reset_total_time": document.getElementById('button_reset_total_time'),
             "canvas_pie": document.getElementById('pie-canvas'),
             "help_toggle": document.getElementById('block-minimal-hotkeys'),
             "help_panel": document.getElementById('block-hotkeys'),
             "info_timer": document.getElementById('info_timer'),
             "info_cycle": document.getElementById('info_cycle'),
             "info_stage": document.getElementById('info_stage'),
+            "info_total_time": document.getElementById('info_total_time'),
           };
 
           for (const [name, input] of Object.entries(this.elementsFromDOM.inputs)) {
@@ -426,6 +434,7 @@
           }
 
           this.elementsFromDOM.button_state.addEventListener('mouseup', () => this.sendEvent("SPACE"));
+          this.elementsFromDOM.button_reset_total_time.addEventListener('mouseup', () => this.resetTotalTime());
           this.elementsFromDOM.help_toggle.addEventListener('click', () => this.toggleHelp());
           this.elementsFromDOM.help_panel.addEventListener('click', () => this.toggleHelp());
         }
@@ -770,10 +779,13 @@
         } 
 
         initUpdateTick() {
-          this.tick = setInterval(this.onRefresh, 500);
+          this.tick = setInterval(this.onRefresh, this.tickInterval);
         }
 
         onRefresh = () => {
+          if (this.isRunning()) {
+            this.totalTime += this.tickInterval;
+          }
           this.updateViews();
         }
 
@@ -784,28 +796,35 @@
           this.updateInfo();
         }
 
-        msInPrintable(timeInMS) {
+        msInPrintableMMSS(timeInMS) {
           const date = new Date(timeInMS).toISOString().slice(14,19); 
           return date;
         }
 
+        msInPrintableHHMMSS(timeInMS) {
+          const date = new Date(timeInMS).toISOString().slice(11,19); 
+          return date;
+        }
+
         updateTitle() {
-          const time = this.msInPrintable(this.timer.getRemainedTime());
+          const time = this.msInPrintableMMSS(this.timer.getRemainedTime());
           let title = time;
           title += " " + "(" + this.currentCycleNumber + "/" + this.maxCycles + ")"
-          if (this.currentState !== "RUN") {
+          if (!this.isRunning()) {
             title += " [PAUSE]";
           }
           this.setTitle(title);
         }
 
         updateInfo() {
-          const timer = this.msInPrintable(this.timer.getRemainedTime());
+          const timer = this.msInPrintableMMSS(this.timer.getRemainedTime());
           const cycle = "(" + this.currentCycleNumber + "/" + this.maxCycles + ")";
           const stage = this.getStageInString(this.currentStage);
+          const totalTime = this.msInPrintableHHMMSS(this.totalTime);
           this.elementsFromDOM.info_timer.textContent = timer;
           this.elementsFromDOM.info_cycle.textContent = cycle;
           this.elementsFromDOM.info_stage.textContent = stage;
+          this.elementsFromDOM.info_total_time.textContent = totalTime;
         }
 
         setTitle(text) {
@@ -834,7 +853,7 @@
         updatePie() {
           const deg = this.getRotation();
           this.elementsFromDOM.canvas_pie.style.transform = "rotate(" + deg + "deg)";
-          this.elementsFromDOM.canvas_pie.style.opacity = (this.currentState !== "RUN") ? "0.5" : "1.0" ;
+          this.elementsFromDOM.canvas_pie.style.opacity = (!this.isRunning()) ? "0.5" : "1.0" ;
         }
 
         setState(state) {
@@ -843,6 +862,10 @@
           if (action) {
             action();
           }
+        }
+
+        isRunning() {
+          return this.currentState === "RUN";
         }
 
         disableInputParams() {
@@ -984,6 +1007,10 @@
             newDisplay = 'block';
           }
           this.elementsFromDOM.help_panel.style.display = newDisplay;
+        }
+
+        resetTotalTime() {
+          this.totalTime = 0;
         }
       }
 
