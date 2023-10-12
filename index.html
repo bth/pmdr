@@ -77,17 +77,24 @@
       height: 100%;
 
     }
-    #pie-canvas {
-      max-height: 100%;
-      max-width: 100%;
-      opacity: 0.5;
-    }
     #container-parameters {
       padding: 20px;
       display: grid;
       grid-template-columns: 1fr 1.5fr;
       grid-gap: 16px;
       text-align: left;
+    }
+    #total_timer_container {
+      text-align: center;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    #total_timer_container > button {
+      width: auto;
+    }
+    #pie-canvas {
+      max-height: 100%;
+      max-width: 100%;
+      opacity: 0.5;
     }
     input {
       width: 100%;
@@ -149,6 +156,12 @@
       </div>
       <div id="block-parameters">
         <div id="container-parameters">
+          <label>Total elapsed time:</label>
+          <div id="total_timer_container">
+            <label>00:00:00</label>
+            <button id="button_reset_total_timer" type="button">Reset</button>
+          </div>
+
           <label>Change state</label>
           <button id="button_state" type="button"></button>
 
