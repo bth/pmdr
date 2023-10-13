@@ -254,9 +254,9 @@
 
         run() {
           const now = new Date().getTime();
-          const elapsedTime = this.target - this.cursor;
+          const remainingTime = this.target - this.cursor;
           this.cursor = now;
-          this.target = this.cursor + elapsedTime;
+          this.target = this.cursor + remainingTime;
           this.isRunning = true;
         }
 
@@ -267,16 +267,16 @@
           }
         }
 
-        getRemainedTime() {
-          let remainedTime = 0;
+        getRemainingTime() {
+          let remainingTime = 0;
           if (this.isRunning) {
             const now = new Date().getTime();
-            remainedTime = this.target - now;
+            remainingTime = this.target - now;
           }
           else {
-            remainedTime = this.target - this.cursor;
+            remainingTime = this.target - this.cursor;
           }
-          return remainedTime;
+          return remainingTime;
         }
       }
 
@@ -808,7 +808,7 @@
         }
 
         updateTitle() {
-          const time = this.msInPrintableMMSS(this.timer.getRemainedTime());
+          const time = this.msInPrintableMMSS(this.timer.getRemainingTime());
           let title = time;
           title += " " + "(" + this.currentCycleNumber + "/" + this.maxCycles + ")"
           if (!this.isRunning()) {
@@ -818,7 +818,7 @@
         }
 
         updateInfo() {
-          const timer = this.msInPrintableMMSS(this.timer.getRemainedTime());
+          const timer = this.msInPrintableMMSS(this.timer.getRemainingTime());
           const cycle = "(" + this.currentCycleNumber + "/" + this.maxCycles + ")";
           const stage = this.getStageInString(this.currentStage);
           const totalTime = this.msInPrintableHHMMSS(this.totalTime);
@@ -833,7 +833,7 @@
         }
 
         getRotation() {
-          const currentActivityRemainedTimeInSeconds = this.timer.getRemainedTime() / 1000;
+          const currentActivityRemainedTimeInSeconds = this.timer.getRemainingTime() / 1000;
           const totalTimeInSeconds = (this.maxCycles * (this.params.task_duration + this.params.break_duration) + this.params.longbreak_duration) * 60;
           let elapsedTimeInSeconds = ((this.currentCycleNumber - 1) * (this.params.task_duration + this.params.break_duration)) * 60;
           if (this.currentStage == this.STAGE.longbreak) {
