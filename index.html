@@ -294,6 +294,11 @@
           }
           return totalElapsedTime;
         }
+
+        resetTotalElapsedTime() {
+          this.cumulTime = 0;
+          this.startTime = new Date().getTime();
+        }
       }
 
       function drawPieSlice(ctx,centerX, centerY, radius, startAngle, endAngle, color ){
@@ -1020,6 +1025,7 @@
         }
 
         resetTotalTime() {
+          this.timer.resetTotalElapsedTime();
           this.updateViews();
         }
       }
