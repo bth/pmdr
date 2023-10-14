@@ -222,6 +222,8 @@
 
       class Timer {
         constructor() {
+          this.startTime =  0;
+          this.cumulTime =  0;
           this.totalTime =  0;
           this.handleOnEnd = null;
           this.isRunning = false;
@@ -249,19 +251,21 @@
           this.cursor = now;
           this.target = this.cursor + this.totalTime;
           this.handleOnEnd = handleOnEnd;
-          this.isRunning = false;
+          this.pause();
         }
 
         run() {
           const now = new Date().getTime();
           const remainingTime = this.target - this.cursor;
           this.cursor = now;
+          this.startTime = now;
           this.target = this.cursor + remainingTime;
           this.isRunning = true;
         }
 
         pause() {
           if (this.isRunning) {
+            this.cumulTime = this.getTotalElapsedTime();
             this.cursor = new Date().getTime();
             this.isRunning = false;
           }
@@ -277,6 +281,18 @@
             remainingTime = this.target - this.cursor;
           }
           return remainingTime;
+        }
+
+        getTotalElapsedTime() {
+          let totalElapsedTime = 0;
+          if (this.isRunning) {
+            const now = new Date().getTime();
+            totalElapsedTime = this.cumulTime + now - this.startTime;
+          }
+          else {
+            totalElapsedTime = this.cumulTime;
+          }
+          return totalElapsedTime;
         }
       }
 
@@ -341,7 +357,6 @@
       class Pmdr {
         constructor() {
           this.initConsts();
-          this.initAttributs();
           this.initParams();
           this.initElementsFromDOM();
           this.initElementsDOMWithParams();
@@ -364,10 +379,6 @@
         initConsts() {
           this.STAGE = Object.freeze({"task":1, "break":2, "longbreak":3});
           this.tickInterval = 500;
-        }
-
-        initAttributs() {
-          this.totalTime = 0;
         }
 
         getURLParameter(sParam) {
@@ -784,9 +795,6 @@
         }
 
         onRefresh = () => {
-          if (this.isRunning()) {
-            this.totalTime += this.tickInterval;
-          }
           this.updateViews();
         }
 
@@ -821,7 +829,7 @@
           const timer = this.msInPrintableMMSS(this.timer.getRemainingTime());
           const cycle = "(" + this.currentCycleNumber + "/" + this.maxCycles + ")";
           const stage = this.getStageInString(this.currentStage);
-          const totalTime = this.msInPrintableHHMMSS(this.totalTime);
+          const totalTime = this.msInPrintableHHMMSS(this.timer.getTotalElapsedTime());
           this.elementsFromDOM.info_timer.textContent = timer;
           this.elementsFromDOM.info_cycle.textContent = cycle;
           this.elementsFromDOM.info_stage.textContent = stage;
@@ -1012,7 +1020,6 @@
         }
 
         resetTotalTime() {
-          this.totalTime = 0;
           this.updateViews();
         }
       }
